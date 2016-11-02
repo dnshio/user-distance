@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="dnshio.repository.github_api_mock" class="Dnshio\Bridge\Doctrine\Repository\GithubApiRepository">
+            <argument type="service" id="database_connection" />
+            <argument type="string">%kernel.root_dir%/../fixtures/testdata.sql</argument>
+        </service>
+
+        <service id="dnshio.github.api_service" class="Dnshio\Bridge\Github\TestApi">
+            <argument type="service" id="dnshio.repository.github_api_mock" />
+        </service>
+
+    </services>
+
+</container>

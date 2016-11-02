@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="dnshio.github.hop_counter" class="Dnshio\Domain\Github\HopCounter">
+            <argument type="service" id="dnshio.github.api_service" />
+        </service>
+
+        <service id="dnshio.controller.github_default" class="Dnshio\Bundle\GithubBundle\Controller\DefaultController">
+            <argument type="service" id="dnshio.github.hop_counter" />
+            <argument type="service" id="dnshio.github.api_service" />
+        </service>
+
+    </services>
+
+</container>

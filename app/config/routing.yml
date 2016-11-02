@@ -1,0 +1,4 @@
+dnshio_github:
+    resource: "@DnshioGithubBundle/Controller"
+    type: annotation
+
