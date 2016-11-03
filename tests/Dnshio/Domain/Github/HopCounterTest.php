@@ -32,6 +32,16 @@ class HopCounterTest extends KernelTestCase
         $this->assertEquals(2, $hopCount);
     }
 
+    public function testShortestPathBetweenTwoConnectedNodes2()
+    {
+        $start = new User(3, 'dnshio');
+        $end = new User(9, 'Seldaek');
+
+        $hopCount = $this->hopCounter->getHopCount($start, $end);
+
+        $this->assertEquals(3, $hopCount);
+    }
+
     public function testHopCountBetweenDisconnectedNodes()
     {
         $start = new User(1, 'dnshio');

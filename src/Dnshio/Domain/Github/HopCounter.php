@@ -9,7 +9,7 @@ class HopCounter
     private $api;
 
     /**
-     * @var User[]
+     * @var UserQueue
      */
     private $usersToVisit = [];
 
@@ -25,7 +25,8 @@ class HopCounter
 
     private function reset()
     {
-        $this->usersToVisit = [];
+        $this->usersToVisit = new UserQueue();
+        $this->usersToVisit->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
         $this->visited = [];
     }
 
@@ -35,34 +36,38 @@ class HopCounter
      * The first iteration
      * @param User $start
      * @param User $end
-     * @param int $depth
      * @return int|null
      */
-    public function getHopCount(User $start, User $end, $depth = 1)
+    public function getHopCount(User $start, User $end)
     {
-        if ($depth <= 1) {
-            $this->reset();
-        }
+        $this->reset();
+        $this->usersToVisit->insert($start, 1);
         $this->visited[] = $start->getId();
-        $repositories = $this->api->getRepositories($start);
 
-        foreach ($repositories as $repository) {
-            $contributors = $this->api->getContributors($repository);
-            foreach ($contributors as $contributor) {
-                if ($contributor->getId() == $end->getId()) {
-                    return $depth;
-                }
-                if (!in_array($contributor->getId(), $this->visited)) {
-                    $this->usersToVisit[] = $contributor;
+        while (!$this->usersToVisit->isEmpty()) {
+            $item = $this->usersToVisit->extract();
+            $node = $item['data'];
+            $depth = $item['priority'];
+
+            $this->visited[] = $node->getId();
+
+            $repositories = $this->api->getRepositories($node);
+
+            foreach ($repositories as $repository) {
+                $contributors = $this->api->getContributors($repository);
+                foreach ($contributors as $contributor) {
+                    if ($contributor->getId() == $end->getId()) {
+                        return $depth;
+                    }
+                    if (!in_array($contributor->getId(), $this->visited)) {
+                        $this->usersToVisit->insert($contributor, $depth + 1);
+                        $this->visited[] = $contributor->getId();
+                    }
                 }
             }
         }
-
-        if (count($this->usersToVisit)) {
-            return $this->getHopCount(array_pop($this->usersToVisit), $end, $depth + 1);
-        }
-
         return null;
     }
+
 
 }

@@ -75,6 +75,7 @@ class GithubApiRepository
             $users[] = new User($u['id'], $u['username']);
         }
 
+        shuffle($users);
         return $users;
     }
 
